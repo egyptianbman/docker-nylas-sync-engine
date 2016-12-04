@@ -1,2 +1,5 @@
 /docker-compose.yml
+/example/attachments
+/example/mysql
+/example/redis
 /nylas.cnf
