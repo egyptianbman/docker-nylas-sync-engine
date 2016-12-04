@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+
+echo "engine waiting for mysql to start..."
+while ! mysqladmin --defaults-extra-file=/etc/my.local.cnf ping > /dev/null 2>&1; do
+    sleep 1
+done
+
+# Check if a nylas table exists.
+tableCount=`mysql --defaults-extra-file=/etc/my.local.cnf -se "SELECT COUNT(1) FROM information_schema.TABLES WHERE TABLE_SCHEMA LIKE 'inbox' AND TABLE_NAME LIKE 'transaction';" | awk '{print $1}'`
+
+if [ ${tableCount} != 0 ]; then
+    cd /opt/sync-engine
+    s6-setuidgid inbox ./bin/verify-db \
+        && s6-setuidgid inbox ./bin/inbox-start
+fi

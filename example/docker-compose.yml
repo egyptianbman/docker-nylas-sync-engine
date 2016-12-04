@@ -1,0 +1,48 @@
+version: "2"
+
+services:
+  app:
+    image: egyptianbman/docker-nylas-sync-engine
+    network_mode: bridge
+    ports:
+      - 5555
+    links:
+      - mysql
+      - redis
+    volumes:
+      - ./attachments:/var/lib/inboxapp/parts
+    environment:
+      - VIRTUAL_HOST=nylas.example.com
+      - VIRTUAL_PROTO=http
+      - VIRTUAL_PORT=443
+      - HTTPS_METHOD=nohttp
+      - CERT_NAME=nylas.example.com
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 50k
+
+  mysql:
+    image: mysql
+    network_mode: bridge
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./nylas.cnf:/etc/mysql/conf.d/nylas.cnf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 50k
+
+  redis:
+    image: redis
+    network_mode: bridge
+    volumes:
+      - ./redis:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 50k
+
+# vim:set ft=yaml ts=2 sw=2 smarttab:

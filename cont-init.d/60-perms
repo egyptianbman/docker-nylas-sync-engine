@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+
+chown -R inbox:inbox /var/lib/inboxapp/
